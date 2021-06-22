@@ -1,17 +1,19 @@
 // ------------ MY DEPENDENCES ------------
 const inquirer = require('inquirer');
-const mysql = require('mysql');
+const mysql = require('mysql')
+              require('dotenv').config();
+
+const consoleTable = require('console.table');
 
 
 const connection = mysql.createConnection({
   host: 'localhost',
-  // Your port, if not 3306
   port: 3306,
-  // Your username
-  user: 'root',
-  // Be sure to update with your own MySQL password!
-  password: '',
-  database: 'employeesdb',
+
+  user: process.env.DB_NAM,
+  password: process.env.DB_USER,
+  database: process.env.DB_PASSWORD,
+
 });
 
 
@@ -54,7 +56,11 @@ const start = () => {
 
 // ------------ CREATE 'VIEW EMPLOYEES' FUNCTION ------------
 const viewEmployees = () => {
-
+  connection.query("select first_name as 'First Name', last_name as 'Last Name', role_id, manager_id from employeesdb.employee"), (err, results) => {
+    if (err) throw err;
+    console.table(results)
+    start();
+  }
 };
 
 

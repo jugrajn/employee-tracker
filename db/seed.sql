@@ -16,7 +16,6 @@ create table role (
     department_id int not null,
     foreign key (department_id) references department(id),
     primary key (id)
-     not null
 );
 
 create table employee (
@@ -31,10 +30,10 @@ create table employee (
 );
 
 insert into department (name)
-values ('Law Enforcement');
+values ('Sales'), ('Accounting');
 
 insert into role (title, salary, department_id)
-values ('Auror', 1000, 1);
+values ('Associate', 1000, 1), ('Accountant', 2000, 2);
 
 insert into employee (first_name, last_name, role_id)
-values ('Harry', 'Potter', 1),
+values ('Harry', 'Potter', 1), ('Ron', 'Weasley', 1), ('Hermione', 'Granger', 2);
