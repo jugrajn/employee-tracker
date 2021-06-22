@@ -50,6 +50,8 @@ const start = () => {
   })
 }
 
+
+
 // ------------ CREATE 'VIEW EMPLOYEES' FUNCTION ------------
 const viewEmployees = () => {
 
