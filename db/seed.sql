@@ -30,10 +30,10 @@ create table employee (
 );
 
 insert into department (name)
-values ('Sales'), ('Accounting');
+values ('Board'), ('Engineering'), ('Security');
 
 insert into role (title, salary, department_id)
-values ('Associate', 1000, 1), ('Accountant', 2000, 2);
+values ('Chairman', 1000000, 1), ('CEO', 500000, 1), ('Head of Security', 100000, 3), ('Intern', 50000, 2);
 
 insert into employee (first_name, last_name, role_id)
-values ('Harry', 'Potter', 1), ('Ron', 'Weasley', 1), ('Hermione', 'Granger', 2);
+values ('Tony', 'Stark', 1), ('Pepper', 'Potts', 2), ('Happy', 'Hogan', 3), ('Peter', 'Parker', 4);
