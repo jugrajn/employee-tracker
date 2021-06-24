@@ -3,7 +3,7 @@ const inquirer = require('inquirer');
 const mysql = require('mysql')
               require('dotenv').config();
 
-const consoleTable = require('console.table');
+const cTable = require('console.table');
 
 
 const connection = mysql.createConnection({
@@ -48,7 +48,7 @@ const start = () => {
   })
 //------------ ADD SWITCH FUNCTION THAT INITATES ALL FUNCTIONS BASED ON RESPONSE ------------
   .then((response) => {
-    switch (response.start) {
+    switch (response.choices) {
       case 'View All Employees':
         viewEmployees()
         break;
@@ -89,7 +89,7 @@ const start = () => {
 
 // ------------ CREATE 'VIEW EMPLOYEES' FUNCTION ------------
 const viewEmployees = () => {
-  connection.query("select first_name as 'First Name', last_name as 'Last Name', role_id, manager_id from employeesdb.employee"), (err, res) => {
+  connection.query("select * from employee"), (err, res) => {
     if (err) throw err;
     console.table(res)
     start();
@@ -100,11 +100,40 @@ const viewEmployees = () => {
 // ------------ CREATE 'VIEW EMPLOYEES BY DEPARTMENT' FUNCTION ------------
 const viewEmployeesByDepartment = () => {
 
+//  GET DEPT TABLE FIRST
+  connection.query('SELECT * FROM employeesdb.department', (err, queryResponse) => {
+    if (err) throw err;
+
+// ASK USER THEN TO SELECT FROM LIST OF DEPTS
+//MAP THE OBJECT FROM QUERY RESPONSE TO AVOID HARD CODING AND WILL INCLUDE ANY ADDED DEPTS FROM USER ------> SEE COMMENT '$$$'
+    inquirer.prompt(
+      {
+        type: 'list',
+        message: 'View employees by which department?',
+        name: 'departmentid',
+        choices: queryResponse.map(department => ({ value: department.id, name: department.name })) // $$$
+      }
+    )
+    
+    .then((deptChoice) => {
+      connection.query(`SELECT employee.id as 'ID', employee.first_name as 'First Name', employee.last_name as 'Last Name', department.name as 'Department' FROM employee LEFT JOIN employeesdb.role on employee.role_id = role.id LEFT JOIN employeesdb.department ON department.id = role.department_id WHERE department.name = ?`, [deptChoice.departmentid], (err, chosenDeptData) => {
+        if (err) throw err;
+        console.table(chosenDeptData);
+      })
+    })
+    // RESTART APPLICATION WITH INTITIAL PROMPTS
+    start();
+  });
+
 };
 
 
 // ------------ CREATE 'VIEW EMPLOYEES BY MANAGER' FUNCTION ------------
 const viewEmployeesbyManager = () => {
+  connection.query(''), (err, res) => {
+    if (err) throw err;
+    start();
+  }
 
 };
 
@@ -175,3 +204,20 @@ const addDepartment = () => {
 const addRole = () => {
 
 };
+
+
+// THIS BELOW IS THE RESPONSE FROM connection.query = `SELECT * FROM employeesdb.department`
+[
+  {
+    id: 1,
+    name: 'Board',
+  },
+  {
+    id: 2,
+    name: 'Engineering',
+  },
+  {
+    id: 3,
+    name: 'Security',
+  }
+]
