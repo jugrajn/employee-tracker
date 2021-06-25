@@ -1,7 +1,7 @@
 // ------------ MY DEPENDENCES ------------
 const inquirer = require('inquirer');
-const mysql = require('mysql')
-              require('dotenv').config();
+const mysql = require('mysql2')
+require('dotenv').config();
 
 const cTable = require('console.table');
 
@@ -10,9 +10,9 @@ const connection = mysql.createConnection({
   host: 'localhost',
   port: 3306,
 
-  user: process.env.DB_NAM,
-  password: process.env.DB_USER,
-  database: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
 
 });
 
@@ -46,11 +46,12 @@ const start = () => {
         'Exit',
       ],
   })
+  
 //------------ ADD SWITCH FUNCTION THAT INITATES ALL FUNCTIONS BASED ON RESPONSE ------------
   .then((response) => {
     switch (response.choices) {
       case 'View All Employees':
-        viewEmployees()
+        viewEmployees();
         break;
       case 'View All Employees by Department':
         viewEmployeesByDepartment()
@@ -88,7 +89,7 @@ const start = () => {
 const viewEmployees = () => {
   connection.query("select * from employee"), (err, res) => {
     if (err) throw err;
-    console.table(res)
+    console.log(res);
     start();
   }
 };
