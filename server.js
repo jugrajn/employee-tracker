@@ -232,9 +232,38 @@ const addDepartment = () => {
 
 
 // ------------ CREATE 'ADD ROLE' FUNCTION ------------
-// const addRole = () => {
-
-// };
+const addRole = () => {
+  connection.query(`SELECT * FROM department`, (err, departmentTable) => {
+    if (err) throw err;
+    
+    inquirer.prompt(
+      [
+        {
+          type: 'input',
+          message: 'What is the title of the role?',
+          name: 'title',
+        },
+        {
+          type: 'number',
+          message: 'What is the salary of this role?',
+          name: 'salary',
+        },
+        {
+          type: 'list',
+          message: 'What department does this role belong to?',
+          name: 'departmentid',
+          choices: departmentTable.map(department => ({name: department.name, value: department.id})),
+        }
+      ]
+    )
+    .then((addedRole) => {
+      connection.query(`INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?); SELECT title as 'Title', salary as 'Salary', department_id as 'Department'`, [addedRole.title, addedRole.salary, addedRole.department_id], (err, roleTable) => {
+        if (err) throw err;
+        console.table(roleTable);
+      })
+    })
+  })
+};
 
 
 // THIS BELOW IS THE RESPONSE FROM connection.query = `SELECT * FROM employeesdb.department`
