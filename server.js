@@ -171,9 +171,44 @@ const viewRoles = () => {
 
 
 // ------------ CREATE 'UPDATE EMPLOYEE ROLE' FUNCTION ------------
-// const updateEmployeeRole = () => {
+const updateEmployeeRole = () => {
+  connection.query(`SELECT * FROM employee`, (err, employeeTable) => {
+    if (err) throw err;
 
-// };
+    inquirer.prompt(
+      {
+        type: 'list',
+        message: 'Which employees role is getting changed?',
+        name: 'employeeid',
+        choices: employeeTable.map(employee => ({name: employee.first_name + " " + employee.last_name, value: employee.id }))
+      }
+    )
+
+    .then((chosenEmployee) => {
+
+      connection.query(`SELECT * FROM role`, (err, roleTable) => {
+        if (err) throw err;
+        
+        inquirer.prompt(
+          {
+            type:'list',
+            message: 'What is the title of the new role?',
+            name: 'roleid',
+            choices: roleTable.map(role => ({ name: role.title, value: role.id}))
+          }
+        )
+
+        .then((updatedRole) => {
+          connection.query(`UPDATE employee SET role_id = ? WHERE id = ?`, [updatedRole.role_id, chosenEmployee.id], (err, employeesNewRole) => {
+            if (err) throw err;
+            console.table(employeesNewRole)
+          })
+        })
+
+      })
+    })
+  })
+};
 
 
 // ------------ CREATE 'ADD EMPLOYEE' FUNCTION ------------
@@ -264,20 +299,3 @@ const addRole = () => {
     })
   })
 };
-
-
-// THIS BELOW IS THE RESPONSE FROM connection.query = `SELECT * FROM employeesdb.department`
-// [
-//   {
-//     id: 1,
-//     name: 'Board',
-//   },
-//   {
-//     id: 2,
-//     name: 'Engineering',
-//   },
-//   {
-//     id: 3,
-//     name: 'Security',
-//   }
-// ]
