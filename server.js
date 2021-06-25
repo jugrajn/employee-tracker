@@ -41,7 +41,6 @@ const start = () => {
         'View All Roles',
         'Update Employee Role',
         'Add Employee',
-        'Remove Employee',
         'Add Department',
         'Add Role',
         'Exit',
@@ -188,7 +187,7 @@ const updateEmployeeRole = () => {
 
       connection.query(`SELECT * FROM role`, (err, roleTable) => {
         if (err) throw err;
-        
+
         inquirer.prompt(
           {
             type:'list',
@@ -208,6 +207,7 @@ const updateEmployeeRole = () => {
       })
     })
   })
+  start();
 };
 
 
@@ -298,4 +298,5 @@ const addRole = () => {
       })
     })
   })
+  start();
 };
