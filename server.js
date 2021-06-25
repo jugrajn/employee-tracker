@@ -3,7 +3,8 @@ const inquirer = require('inquirer');
 const mysql = require('mysql2')
 require('dotenv').config();
 
-const cTable = require('console.table');
+require('console.table');
+const util = require('util');
 
 
 const connection = mysql.createConnection({
@@ -23,6 +24,8 @@ connection.connect((err) => {
   start();
 })
 
+//SETTING UP connection.query TO USE PROMISES INSTEAD OF CALLBACKS
+connection.query = util.promisify(connection.query);
 
 // ------------ START THE APPLICATION ------------
 const start = () => {
@@ -49,7 +52,7 @@ const start = () => {
   
 //------------ ADD SWITCH FUNCTION THAT INITATES ALL FUNCTIONS BASED ON RESPONSE ------------
   .then((response) => {
-    switch (response.choices) {
+    switch (response.options) {
       case 'View All Employees':
         viewEmployees();
         break;
@@ -86,12 +89,10 @@ const start = () => {
 
 
 // ------------ CREATE 'VIEW EMPLOYEES' FUNCTION ------------
-const viewEmployees = () => {
-  connection.query("select * from employee"), (err, res) => {
-    if (err) throw err;
-    console.log(res);
-    start();
-  }
+const viewEmployees = async  () => {
+  const response= await connection.query("SELECT * FROM employee")
+     console.table(response);
+     start();
 };
 
 
