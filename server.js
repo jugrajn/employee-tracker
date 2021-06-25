@@ -201,7 +201,6 @@ const addEmployee = () => {
         },
       ])
   
-    // WORK IN PROGRESSS
     .then((response) => {
       connection.query(`INSERT INTO employee (first_name, last_name, role_id) VALUES (?, ?, ?); SELECT employee.first_name AS 'First Name', employee.last_name AS 'Last Name' FROM employee` [response.firstName, response.lastName, response.roleid], (err, addedEmployeeData) => {
         if (err) throw err;
@@ -209,15 +208,27 @@ const addEmployee = () => {
       })
     })
   })
-
   start();
 };
 
 
-// ------------ CREATE 'ADD DEPARTEMENT' FUNCTION ------------
-// const addDepartment = () => {
-
-// };
+// ------------ CREATE 'ADD DEPARTMENT' FUNCTION ------------
+const addDepartment = () => {
+  inquirer.prompt(
+    {
+      type: 'input',
+      message: 'What is the name of the department?',
+      name: 'name',
+    }
+  )
+  .then((addedDepartmentData) => {
+    connection.query(`INSERT INTO department (name) VALUES (?)`, [addedDepartmentData.name], (err, newDepartment) => {
+      if (err) throw err;
+      console.table(newDepartment);
+    })
+  })
+  start();
+};
 
 
 // ------------ CREATE 'ADD ROLE' FUNCTION ------------
