@@ -32,19 +32,20 @@ const start = () => {
       type: 'list',
       name: 'options',
       message: 'What would you like to do?',
-      choices: [
+      choices: 
+      [
         'View All Employees',
         'View All Employees by Department',
-        'View All Employees by Manager',
+        'View All Employees by Role',
         'View All Departments',
         'View All Roles',
         'Update Employee Role',
         'Add Employee',
         'Remove Employee',
         'Add Department',
-        'Add role',
-        'Exit'
-        ],
+        'Add Role',
+        'Exit',
+      ],
   })
 //------------ ADD SWITCH FUNCTION THAT INITATES ALL FUNCTIONS BASED ON RESPONSE ------------
   .then((response) => {
@@ -55,8 +56,8 @@ const start = () => {
       case 'View All Employees by Department':
         viewEmployeesByDepartment()
         break;
-      case 'View All Empployees by Manager':
-        viewEmployeesbyManager()
+      case 'View All Employees by Role':
+        viewEmployeesbyRole()
         break;
       case 'View All Departments':
         viewDepartments()
@@ -70,17 +71,14 @@ const start = () => {
       case 'Add Employee':
         addEmployee()
         break;
-      case 'Remove Employee':
-        removeEmployee()
-        break;
       case 'Add Department':
         addDepartment()
         break;
-      case 'Add role':
+      case 'Add Role':
         addRole()
         break;
       case 'Exit':
-        break
+        break;
     }
   })
 }
@@ -124,100 +122,122 @@ const viewEmployeesByDepartment = () => {
     // RESTART APPLICATION WITH INTITIAL PROMPTS
     start();
   });
-
 };
 
 
-// ------------ CREATE 'VIEW EMPLOYEES BY MANAGER' FUNCTION ------------
-const viewEmployeesbyManager = () => {
-  connection.query(''), (err, res) => {
+// ------------ CREATE 'VIEW EMPLOYEES BY ROLE' FUNCTION ------------
+const viewEmployeesbyRole = () => {
+
+  connection.query('SELECT * FROM employeesdb.role', (err, queryResponse) => {
     if (err) throw err;
-    start();
-  }
 
-};
+    inquirer.prompt(
+      {
+        type: 'list',
+        message: 'View employees by which role?',
+        name: 'roleid',
+        choices: queryResponse.map(role => ({ value: role.id, name: role.title })),
+      })
+
+      .then((roleChoice) => {
+        connection.query(`SELECT employee.id as 'ID', employee.first_name as 'First Name', employee.last_name as 'Last Name', role.title as 'Title', role.salary as 'Salary' FROM employee LEFT JOIN employeesdb.role ON employee.role_id = role.id WHERE role.title = ?`, [roleChoice.roleid], (err, chosenRoleData) => {
+          if (err) throw err;
+          console.table(chosenRoleData);
+        })
+      })
+      start();
+   });
+}
 
 
 // ------------ CREATE 'VIEW DEPARTMENTS' FUNCTION ------------
 const viewDepartments = () => {
 
+  connection.query('SELECT * FROM employeesdb.department', (err, res) => {
+    if (err) throw err;
+    console.table(res);
+  })
 };
 
 
 // ------------ CREATE 'VIEW ROLES' FUNCTION ------------
 const viewRoles = () => {
 
+  connection.query('SELECT * FROM employeesdb.role', (err, res) => {
+    if (err) throw err;
+    console.table(res);
+  })
 }
 
 
 // ------------ CREATE 'UPDATE EMPLOYEE ROLE' FUNCTION ------------
-const updateEmployeeRole = () => {
+// const updateEmployeeRole = () => {
 
-};
+// };
 
 
 // ------------ CREATE 'ADD EMPLOYEE' FUNCTION ------------
 const addEmployee = () => {
-  inquirer.prompt([
-    {
-      type: 'input',
-      message: "What is the employee's first name?",
-      name: "firstName",
-    },
-    {
-      type: 'input',
-      message: "What is the employee's last name?",
-      name: 'lastName',
-    },
-    {
-      type: 'input',
-      message: "What is the employee's role?",
-      name: 'role',
-    },
-    {
-      type: 'input',
-      message: "Who is the employee's manager?",
-      name: 'manager',
-    }
-  ])
+  connection.query('SELECT * FROM employeesdb.role', (err, queryResponse) => {
+    if (err) throw err;
 
-  // WORK IN PROGRESSS
-  .then((response) => {
-    connection.query('insert into employee set ?') 
+    inquirer.prompt(
+      [
+        {
+          type: 'list',
+          message: "Select the employee's role.",
+          name: 'roleid',
+          choices: queryResponse.map(role =>({ name: role.title, value: role.id})),
+        },
+        {
+          type: 'input',
+          message: "What is the employee's first name?",
+          name: "firstName",
+        },
+        {
+          type: 'input',
+          message: "What is the employee's last name?",
+          name: 'lastName',
+        },
+      ])
+  
+    // WORK IN PROGRESSS
+    .then((response) => {
+      connection.query(`INSERT INTO employee (first_name, last_name, role_id) VALUES (?, ?, ?); SELECT employee.first_name AS 'First Name', employee.last_name AS 'Last Name' FROM employee` [response.firstName, response.lastName, response.roleid], (err, addedEmployeeData) => {
+        if (err) throw err;
+        console.table(addedEmployeeData);
+      })
+    })
   })
-};
 
-
-// ------------ CREATE 'REMOVE EMPLOYEE' FUNCTION ------------
-const removeEmployee = () => {
-
+  start();
 };
 
 
 // ------------ CREATE 'ADD DEPARTEMENT' FUNCTION ------------
-const addDepartment = () => {
+// const addDepartment = () => {
 
-};
+// };
 
 
 // ------------ CREATE 'ADD ROLE' FUNCTION ------------
-const addRole = () => {
+// const addRole = () => {
 
-};
+// };
 
 
 // THIS BELOW IS THE RESPONSE FROM connection.query = `SELECT * FROM employeesdb.department`
-[
-  {
-    id: 1,
-    name: 'Board',
-  },
-  {
-    id: 2,
-    name: 'Engineering',
-  },
-  {
-    id: 3,
-    name: 'Security',
-  }
-]
+// [
+//   {
+//     id: 1,
+//     name: 'Board',
+//   },
+//   {
+//     id: 2,
+//     name: 'Engineering',
+//   },
+//   {
+//     id: 3,
+//     name: 'Security',
+//   }
+// ]
