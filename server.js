@@ -68,7 +68,7 @@ const start = async () => {
         await viewRoles()
         break;
       case 'Update Employee Role':
-        await updateEmployeeRole()
+        await updateEmployeeRole()  // WORKING!!!!!!
         break;
       case 'Add Employee':
         await addEmployee()
@@ -137,10 +137,9 @@ const viewEmployeesbyRole = async () => {
         choices: queryResponse.map(role => ({ value: role.id, name: role.title }))
   })
 
-  const chosenRoleData = await connection.query(`SELECT employee.id as 'ID', employee.first_name as 'First Name', employee.last_name as 'Last Name', role.title as 'Title', role.salary as 'Salary' FROM employee LEFT JOIN employeesdb.role ON employee.role_id = role.id WHERE role.title = ?`, [roleChoice.roleid])
+  const chosenRoleData = await connection.query(`SELECT employee.first_name as 'First Name', employee.last_name as 'Last Name', role.title as 'Title', role.salary as 'Salary' FROM employee, role WHERE employee.role_id = role.id AND employee.role_id = ?`, [roleChoice.roleid])
           console.table(chosenRoleData);
-  
-  start();
+          start();
 }
 
 
