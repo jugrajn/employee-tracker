@@ -67,7 +67,7 @@ const start = async () => {
       case 'View All Roles': // WORKING !!!!!!!!!!!!!!!
         await viewRoles()
         break;
-      case 'Update Employee Role':
+      case 'Update Employee Role': // WORKING !!!!!!!!!!
         await updateEmployeeRole()  
         break;
       case 'Add Employee': // WORKING!!!!!!!!!!!!!
@@ -89,7 +89,7 @@ const start = async () => {
 
 // ------------ CREATE 'VIEW EMPLOYEES' FUNCTION ------------
 const viewEmployees = async  () => {
-  const response= await connection.query("SELECT * FROM employee")
+  const response= await connection.query("SELECT employee.first_name as 'First Name', employee.last_name as 'Last Name', role.title AS 'Title', department.name AS 'Department', role.salary as 'Salary' from employee, role, department WHERE employee.role_id = role.id AND role.department_id = department.id")
      console.table(response);
      start(); 
 };
@@ -140,7 +140,7 @@ const viewEmployeesbyRole = async () => {
 // ------------ CREATE 'VIEW DEPARTMENTS' FUNCTION ------------
 const viewDepartments = async () => {
 
-  const res = await connection.query('SELECT * FROM employeesdb.department')
+  const res = await connection.query(`SELECT id AS 'ID', name AS 'Department' FROM department`)
     console.table(res);
   start();
 };
@@ -149,7 +149,7 @@ const viewDepartments = async () => {
 // ------------ CREATE 'VIEW ROLES' FUNCTION ------------
 const viewRoles = async () => {
 
-  const res = await connection.query('SELECT * FROM employeesdb.role')
+  const res = await connection.query(`SELECT role.id AS 'ID', role.title as 'Title', role.salary AS 'Salary', department.name as 'Department'  FROM department, role WHERE role.department_id = department.id`)
     console.table(res);
   start();
 }
