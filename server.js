@@ -55,7 +55,7 @@ const start = async () => {
       case 'View All Employees': // WORKING!!!!!!!!!!!!!!
         await viewEmployees();
         break;
-      case 'View All Employees by Department':
+      case 'View All Employees by Department': // WORKING!!!!!!!!!!!
         await viewEmployeesByDepartment()
         break;
       case 'View All Employees by Role': // WORKING!!!!!!
@@ -198,11 +198,10 @@ const updateEmployeeRole = () => {
 
 
 // ------------ CREATE 'ADD EMPLOYEE' FUNCTION ------------
-const addEmployee = () => {
-  connection.query('SELECT * FROM employeesdb.role', (err, queryResponse) => {
-    if (err) throw err;
+const addEmployee = async () => {
+  const queryResponse = await connection.query('SELECT * FROM employeesdb.role')
 
-    inquirer.prompt(
+  const response = await inquirer.prompt(
       [
         {
           type: 'list',
@@ -222,33 +221,27 @@ const addEmployee = () => {
         },
       ])
   
-    .then((response) => {
-      connection.query(`INSERT INTO employee (first_name, last_name, role_id) VALUES (?, ?, ?); SELECT employee.first_name AS 'First Name', employee.last_name AS 'Last Name' FROM employee` [response.firstName, response.lastName, response.roleid], (err, addedEmployeeData) => {
-        if (err) throw err;
+    await connection.query(`INSERT INTO employee (first_name, last_name, role_id) VALUES (?, ?, ?); `, [response.firstName, response.lastName, response.roleid])
+
+    const addedEmployeeData = await connection.query(`SELECT employee.first_name AS 'First Name', employee.last_name AS 'Last Name' FROM employee`)
         console.table(addedEmployeeData);
-      })
-    })
-  })
-  start();
+        start();
 };
 
 
 // ------------ CREATE 'ADD DEPARTMENT' FUNCTION ------------
-const addDepartment = () => {
-  inquirer.prompt(
+const addDepartment = async () => {
+  const addedDepartmentData = await inquirer.prompt(
     {
       type: 'input',
       message: 'What is the name of the department?',
       name: 'name',
     }
   )
-  .then((addedDepartmentData) => {
-    connection.query(`INSERT INTO department (name) VALUES (?)`, [addedDepartmentData.name], (err, newDepartment) => {
-      if (err) throw err;
-      console.table(newDepartment);
-    })
-  })
-  start();
+  
+  const newDepartment = await connection.query(`INSERT INTO department (name) VALUES (?)`, [addedDepartmentData.name])
+    console.table(newDepartment);
+    start();
 };
 
 
