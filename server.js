@@ -76,7 +76,7 @@ const start = async () => {
       case 'Add Department':
         await addDepartment()
         break;
-      case 'Add Role':
+      case 'Add Role':  // WORKING!!!!!!
         await addRole()
         break;
       case 'Exit':
@@ -239,8 +239,12 @@ const addDepartment = async () => {
     }
   )
   
-  const newDepartment = await connection.query(`INSERT INTO department (name) VALUES (?)`, [addedDepartmentData.name])
-    console.table(newDepartment);
+  await connection.query(`INSERT INTO department (name) VALUES (?)`, [addedDepartmentData.name])
+
+  const newDepartment = await connection.query(`SELECT * from department`)
+  
+  console.log(`Success! ${addedDepartmentData.name} added as a new department to the database.`)  
+  console.table(newDepartment);
     start();
 };
 
