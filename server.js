@@ -70,7 +70,7 @@ const start = async () => {
       case 'Update Employee Role':
         await updateEmployeeRole()  
         break;
-      case 'Add Employee':
+      case 'Add Employee': // WORKING!!!!!!!!!!!!!
         await addEmployee()
         break;
       case 'Add Department':
@@ -246,11 +246,10 @@ const addDepartment = async () => {
 
 
 // ------------ CREATE 'ADD ROLE' FUNCTION ------------
-const addRole = () => {
-  connection.query(`SELECT * FROM department`, (err, departmentTable) => {
-    if (err) throw err;
+const addRole = async () => {
+   const departmentTable = await connection.query(`SELECT * FROM department`)
     
-    inquirer.prompt(
+   const addedRole = await inquirer.prompt(
       [
         {
           type: 'input',
@@ -270,12 +269,12 @@ const addRole = () => {
         }
       ]
     )
-    .then((addedRole) => {
-      connection.query(`INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?); SELECT title as 'Title', salary as 'Salary', department_id as 'Department'`, [addedRole.title, addedRole.salary, addedRole.department_id], (err, roleTable) => {
-        if (err) throw err;
+    
+    await connection.query(`INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)`, [addedRole.title, addedRole.salary, addedRole.departmentid])
+
+    const roleTable = await connection.query(`SELECT title as 'Title', salary as 'Salary', department.name as 'Department' FROM role, department WHERE role.department_id = department.id`)
+        console.log(`Success! New role has been added to database.`)
         console.table(roleTable);
-      })
-    })
-  })
-  start();
+
+    start();
 };
