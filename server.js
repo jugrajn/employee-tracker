@@ -58,7 +58,7 @@ const start = async () => {
       case 'View All Employees by Department':
         await viewEmployeesByDepartment()
         break;
-      case 'View All Employees by Role':
+      case 'View All Employees by Role': // WORKING!!!!!!
         await viewEmployeesbyRole()
         break;
       case 'View All Departments': // WORKING!!!!!!!!!!!!!
@@ -68,7 +68,7 @@ const start = async () => {
         await viewRoles()
         break;
       case 'Update Employee Role':
-        await updateEmployeeRole()  // WORKING!!!!!!
+        await updateEmployeeRole()  
         break;
       case 'Add Employee':
         await addEmployee()
@@ -98,30 +98,24 @@ const viewEmployees = async  () => {
 // ------------ CREATE 'VIEW EMPLOYEES BY DEPARTMENT' FUNCTION ------------
 const viewEmployeesByDepartment = async () => {
 
-//  GET DEPT TABLE FIRST
-  connection.query('SELECT * FROM employeesdb.department', async (err, queryResponse) => {
-    if (err) throw err;
+  //  GET DEPT TABLE FIRST
+  const queryResponse = await connection.query('SELECT * FROM employeesdb.department')
+    
 
-// ASK USER THEN TO SELECT FROM LIST OF DEPTS
+  // ASK USER THEN TO SELECT FROM LIST OF DEPTS
 //MAP THE OBJECT FROM QUERY RESPONSE TO AVOID HARD CODING AND WILL INCLUDE ANY ADDED DEPTS FROM USER ------> SEE COMMENT '$$$'
-    const deptChoice = await inquirer.prompt(
+  const deptChoice = await inquirer.prompt(
       {
         type: 'list',
         message: 'View employees by which department?',
-        name: 'departmentid',
+        name: 'departmentName',
         choices: queryResponse.map(department => ({ value: department.id, name: department.name })) // $$$
       })
       
-      connection.query(`SELECT employee.id as 'ID', employee.first_name as 'First Name', employee.last_name as 'Last Name', department.name as 'Department' FROM employee LEFT JOIN employeesdb.role on employee.role_id = role.id LEFT JOIN employeesdb.department ON department.id = role.department_id WHERE department.name = ?`, [deptChoice.departmentid], (err, chosenDeptData) => {
-        if (err) throw err;
+  const chosenDeptData = await connection.query(`SELECT employee.first_name AS 'First Name', employee.last_name AS 'Last Name', department.name AS 'Department' FROM employee LEFT JOIN employeesdb.role on employee.role_id = role.id LEFT JOIN employeesdb.department ON department.id = role.department_id WHERE department.id = ?`, [deptChoice.departmentName])
         console.table(chosenDeptData);
-      })
-  
-    // RESTART APPLICATION WITH INTITIAL PROMPTS
-    
-  });
-  start();
-};
+        start();
+}
 
 
 // ------------ CREATE 'VIEW EMPLOYEES BY ROLE' FUNCTION ------------
