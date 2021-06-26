@@ -158,12 +158,10 @@ const viewDepartments = async () => {
 
 
 // ------------ CREATE 'VIEW ROLES' FUNCTION ------------
-const viewRoles = () => {
-
-  connection.query('SELECT * FROM employeesdb.role', (err, res) => {
-    if (err) throw err;
+const viewRoles = async () => {
+  
+  const res = await connection.query('SELECT * FROM employeesdb.role')
     console.table(res);
-  })
   start();
 }
 
