@@ -28,9 +28,9 @@ connection.connect((err) => {
 connection.query = util.promisify(connection.query);
 
 // ------------ START THE APPLICATION ------------
-const start = () => {
+const start = async () => {
 
-  inquirer.prompt(
+  const selectTask = await inquirer.prompt(
     {
       type: 'list',
       name: 'options',
@@ -51,9 +51,8 @@ const start = () => {
   })
   
 //------------ ADD SWITCH FUNCTION THAT INITATES ALL FUNCTIONS BASED ON RESPONSE ------------
-  .then((response) => {
-    switch (response.options) {
-      case 'View All Employees':
+    switch (selectTask.options) {
+      case 'View All Employees': // WORKING!!!!!!!!!!!!!!!!
         viewEmployees();
         break;
       case 'View All Employees by Department':
@@ -62,7 +61,7 @@ const start = () => {
       case 'View All Employees by Role':
         viewEmployeesbyRole()
         break;
-      case 'View All Departments':
+      case 'View All Departments': // WORKING!!!!!!!!!!!!!
         viewDepartments()
         break;
       case 'View All Roles':
@@ -83,7 +82,7 @@ const start = () => {
       case 'Exit':
         break;
     }
-  })
+  
 }
 
 
@@ -92,72 +91,69 @@ const start = () => {
 const viewEmployees = async  () => {
   const response= await connection.query("SELECT * FROM employee")
      console.table(response);
-     start();
+     start(); 
 };
 
 
 // ------------ CREATE 'VIEW EMPLOYEES BY DEPARTMENT' FUNCTION ------------
-const viewEmployeesByDepartment = () => {
+const viewEmployeesByDepartment = async () => {
 
 //  GET DEPT TABLE FIRST
-  connection.query('SELECT * FROM employeesdb.department', (err, queryResponse) => {
+  connection.query('SELECT * FROM employeesdb.department', async (err, queryResponse) => {
     if (err) throw err;
 
 // ASK USER THEN TO SELECT FROM LIST OF DEPTS
 //MAP THE OBJECT FROM QUERY RESPONSE TO AVOID HARD CODING AND WILL INCLUDE ANY ADDED DEPTS FROM USER ------> SEE COMMENT '$$$'
-    inquirer.prompt(
+    const deptChoice = await inquirer.prompt(
       {
         type: 'list',
         message: 'View employees by which department?',
         name: 'departmentid',
         choices: queryResponse.map(department => ({ value: department.id, name: department.name })) // $$$
-      }
-    )
-    
-    .then((deptChoice) => {
+      })
+      
       connection.query(`SELECT employee.id as 'ID', employee.first_name as 'First Name', employee.last_name as 'Last Name', department.name as 'Department' FROM employee LEFT JOIN employeesdb.role on employee.role_id = role.id LEFT JOIN employeesdb.department ON department.id = role.department_id WHERE department.name = ?`, [deptChoice.departmentid], (err, chosenDeptData) => {
         if (err) throw err;
         console.table(chosenDeptData);
       })
-    })
+  
     // RESTART APPLICATION WITH INTITIAL PROMPTS
-    start();
+    
   });
+  start();
 };
 
 
 // ------------ CREATE 'VIEW EMPLOYEES BY ROLE' FUNCTION ------------
-const viewEmployeesbyRole = () => {
+const viewEmployeesbyRole = async () => {
 
-  connection.query('SELECT * FROM employeesdb.role', (err, queryResponse) => {
+  connection.query('SELECT * FROM employeesdb.role', async (err, queryResponse) => {
     if (err) throw err;
 
-    inquirer.prompt(
+    const roleChoice = await inquirer.prompt(
       {
         type: 'list',
         message: 'View employees by which role?',
         name: 'roleid',
-        choices: queryResponse.map(role => ({ value: role.id, name: role.title })),
+        choices: queryResponse.map(role => ({ value: role.id, name: role.title }))
       })
 
-      .then((roleChoice) => {
         connection.query(`SELECT employee.id as 'ID', employee.first_name as 'First Name', employee.last_name as 'Last Name', role.title as 'Title', role.salary as 'Salary' FROM employee LEFT JOIN employeesdb.role ON employee.role_id = role.id WHERE role.title = ?`, [roleChoice.roleid], (err, chosenRoleData) => {
           if (err) throw err;
           console.table(chosenRoleData);
         })
-      })
-      start();
    });
+
+  start();
 }
 
 
 // ------------ CREATE 'VIEW DEPARTMENTS' FUNCTION ------------
-const viewDepartments = () => {
+const viewDepartments = async () => {
 
-  connection.query('SELECT * FROM employeesdb.department', (err, res) => {
-    if (err) throw err;
+  const res = await connection.query('SELECT * FROM employeesdb.department')
     console.table(res);
-  })
+  start();
 };
 
 
@@ -168,6 +164,7 @@ const viewRoles = () => {
     if (err) throw err;
     console.table(res);
   })
+  start();
 }
 
 
