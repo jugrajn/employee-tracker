@@ -2,8 +2,8 @@
 const inquirer = require('inquirer');
 const mysql = require('mysql2')
 require('dotenv').config();
-
 require('console.table');
+
 const util = require('util');
 
 
@@ -73,7 +73,7 @@ const start = async () => {
       case 'Add Employee': // WORKING!!!!!!!!!!!!!
         await addEmployee()
         break;
-      case 'Add Department':
+      case 'Add Department': // WORKING !!!!!!!!!
         await addDepartment()
         break;
       case 'Add Role':  // WORKING!!!!!!
@@ -156,43 +156,37 @@ const viewRoles = async () => {
 
 
 // ------------ CREATE 'UPDATE EMPLOYEE ROLE' FUNCTION ------------
-const updateEmployeeRole = () => {
-  connection.query(`SELECT * FROM employee`, (err, employeeTable) => {
-    if (err) throw err;
+const updateEmployeeRole = async () => {
 
-    inquirer.prompt(
-      {
-        type: 'list',
-        message: 'Which employees role is getting changed?',
-        name: 'employeeid',
-        choices: employeeTable.map(employee => ({name: employee.first_name + " " + employee.last_name, value: employee.id }))
-      }
-    )
+  const employeeTable = await connection.query(`SELECT * FROM employee`)
+    
+  const chosenEmployee = await inquirer.prompt(
+    {
+      type: 'list',
+      message: 'Which employees role is getting changed?',
+      name: 'employeeid',
+      choices: employeeTable.map(employee => ({name: employee.first_name + " " + employee.last_name, value: employee.id }))
+    }
+  )
+    
+  const roleTable = await connection.query(`SELECT * FROM role`)
+    
 
-    .then((chosenEmployee) => {
-
-      connection.query(`SELECT * FROM role`, (err, roleTable) => {
-        if (err) throw err;
-
-        inquirer.prompt(
-          {
-            type:'list',
-            message: 'What is the title of the new role?',
-            name: 'roleid',
-            choices: roleTable.map(role => ({ name: role.title, value: role.id}))
-          }
-        )
-
-        .then((updatedRole) => {
-          connection.query(`UPDATE employee SET role_id = ? WHERE id = ?`, [updatedRole.role_id, chosenEmployee.id], (err, employeesNewRole) => {
-            if (err) throw err;
-            console.table(employeesNewRole)
-          })
-        })
-
-      })
+  const updatedRole = await inquirer.prompt(
+    {
+      type:'list',
+      message: 'What is the title of the new role?',
+      name: 'roleid',
+      choices: roleTable.map(role => ({ name: role.title, value: role.id}))
     })
-  })
+
+  
+  await connection.query(`UPDATE employee SET role_id = ? WHERE id = ?`, [updatedRole.roleid, chosenEmployee.employeeid])
+
+  const employeesNewRole = await connection.query(`SELECT employee.first_name as 'First Name', employee.last_name as 'Last Name', role.title AS 'Title', department.name AS 'Department' from employee, role, department WHERE employee.role_id = role.id AND role.department_id = department.id`)
+  console.table(employeesNewRole)
+
+  console.log(updatedRole.roleid)       
   start();
 };
 
