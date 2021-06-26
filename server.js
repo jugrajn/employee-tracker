@@ -52,32 +52,32 @@ const start = async () => {
   
 //------------ ADD SWITCH FUNCTION THAT INITATES ALL FUNCTIONS BASED ON RESPONSE ------------
     switch (selectTask.options) {
-      case 'View All Employees': // WORKING!!!!!!!!!!!!!!!!
-        viewEmployees();
+      case 'View All Employees': // WORKING!!!!!!!!!!!!!!
+        await viewEmployees();
         break;
       case 'View All Employees by Department':
-        viewEmployeesByDepartment()
+        await viewEmployeesByDepartment()
         break;
       case 'View All Employees by Role':
-        viewEmployeesbyRole()
+        await viewEmployeesbyRole()
         break;
       case 'View All Departments': // WORKING!!!!!!!!!!!!!
-        viewDepartments()
+        await viewDepartments()
         break;
-      case 'View All Roles':
-        viewRoles()
+      case 'View All Roles': // WORKING !!!!!!!!!!!!!!!
+        await viewRoles()
         break;
       case 'Update Employee Role':
-        updateEmployeeRole()
+        await updateEmployeeRole()
         break;
       case 'Add Employee':
-        addEmployee()
+        await addEmployee()
         break;
       case 'Add Department':
-        addDepartment()
+        await addDepartment()
         break;
       case 'Add Role':
-        addRole()
+        await addRole()
         break;
       case 'Exit':
         break;
@@ -127,23 +127,19 @@ const viewEmployeesByDepartment = async () => {
 // ------------ CREATE 'VIEW EMPLOYEES BY ROLE' FUNCTION ------------
 const viewEmployeesbyRole = async () => {
 
-  connection.query('SELECT * FROM employeesdb.role', async (err, queryResponse) => {
-    if (err) throw err;
-
-    const roleChoice = await inquirer.prompt(
+  const queryResponse = await connection.query('SELECT * FROM employeesdb.role')
+    
+  const roleChoice = await inquirer.prompt(
       {
         type: 'list',
         message: 'View employees by which role?',
         name: 'roleid',
         choices: queryResponse.map(role => ({ value: role.id, name: role.title }))
-      })
+  })
 
-        connection.query(`SELECT employee.id as 'ID', employee.first_name as 'First Name', employee.last_name as 'Last Name', role.title as 'Title', role.salary as 'Salary' FROM employee LEFT JOIN employeesdb.role ON employee.role_id = role.id WHERE role.title = ?`, [roleChoice.roleid], (err, chosenRoleData) => {
-          if (err) throw err;
+  const chosenRoleData = await connection.query(`SELECT employee.id as 'ID', employee.first_name as 'First Name', employee.last_name as 'Last Name', role.title as 'Title', role.salary as 'Salary' FROM employee LEFT JOIN employeesdb.role ON employee.role_id = role.id WHERE role.title = ?`, [roleChoice.roleid])
           console.table(chosenRoleData);
-        })
-   });
-
+  
   start();
 }
 
@@ -159,7 +155,7 @@ const viewDepartments = async () => {
 
 // ------------ CREATE 'VIEW ROLES' FUNCTION ------------
 const viewRoles = async () => {
-  
+
   const res = await connection.query('SELECT * FROM employeesdb.role')
     console.table(res);
   start();
