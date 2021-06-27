@@ -26,11 +26,14 @@
 
   A prepopulated database for mysql will be required. Seed the .sql file to pif you need data.
 
-  * Database
-  ![]('Assets\seedDB.PNG')
+  #### Database
+  ![](Assets/seedDB.PNG)
 
-  * Application
-  ![]('Assets\Application.PNG')
+  #### Application
+  ![](Assets/Application.PNG)
+
+  #### Demo
+  ![]('https://drive.google.com/file/d/1QkASIkc3dMywO2CAyJfjBcN1uahocxVO/view')
 
   ## License
  Licensed under MIT
