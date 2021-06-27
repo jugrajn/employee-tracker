@@ -3,8 +3,13 @@
   ![MIT License](https://img.shields.io/badge/license-MIT-orange)
   ## Description
 
-  An application designed to view and create  employees, departments, roles. Also update roles of employees. 
-
+  An application designed to help the user creat an employee database, where the user will be able to:
+   * Add employees, departments, & roles
+   * View Employees, departments, & roles
+   * Filter and view employees BY DEPARTMENTS AND ROLES
+   * Also update roles of employees
+  
+  Employee data will consist of first and last name, department, their roles, and salary
 
   ## Table of Contents
 
@@ -32,8 +37,7 @@
   #### Application
   ![](Assets/Application.PNG)
 
-  #### Demo
-  ![]('https://drive.google.com/file/d/1QkASIkc3dMywO2CAyJfjBcN1uahocxVO/view')
+  [Demo](https://drive.google.com/file/d/1QkASIkc3dMywO2CAyJfjBcN1uahocxVO/view)
 
   ## License
  Licensed under MIT
